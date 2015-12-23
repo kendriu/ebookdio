@@ -4,6 +4,12 @@ from scrapy.spiders import CrawlSpider, Rule
 
 from audioteka.items import AudioBookLoader
 
+EXCLUDED_AUTHORS = [
+    'CIDEB EDITRICE',
+    'Gamma',
+    'Disney'
+]
+
 
 class CrawlSpider(CrawlSpider):
     name = 'crawl'
@@ -11,11 +17,6 @@ class CrawlSpider(CrawlSpider):
     start_urls = ['http://audioteka.com/pl/']
 
     rules = (
-        # Rule(LinkExtractor(
-        # restrict_css=('.load-more'),
-        # ),
-        # callback='parse_list',
-        # follow=True),
         Rule(LinkExtractor(
             restrict_xpaths=('(//ul[contains(@class, "menu_level_1")])[1]',
                              '//div[contains(@class, "load-more")]'
@@ -25,6 +26,7 @@ class CrawlSpider(CrawlSpider):
             callback='parse_list',
             follow=True),
     )
+    books = []
 
     def parse_list(self, response):
         result = []
@@ -37,6 +39,9 @@ class CrawlSpider(CrawlSpider):
             l.add_xpath('category', '//h1/text()')
 
             item = l.load_item()
-            if 'author' in item:
-                result.append(item)
+            if 'author' in item and item['author'] not in EXCLUDED_AUTHORS:
+                data = (item['author'], item['title'])
+                if data not in self.books:
+                    result.append(item)
+                    self.books.append(data)
         return result
