@@ -3,8 +3,8 @@
 
 import json
 import os
-from pprint import pprint
-ROOT = os.path.join(os.path.dirname(__file__), '..')
+
+from utils import ROOT
 
 
 def main():
