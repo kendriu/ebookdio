@@ -22,6 +22,12 @@ def main():
     print('M2T ratio: ', round(len(m) / float(len(title_m)), 2))
 
 
+def get_matched_books():
+    abooks = load_books('audioteka.json')
+    ebooks = load_books('swiatczytnikow.json')
+    return match(abooks, ebooks, index)
+
+
 def load_books(filename):
     with open(os.path.join(ROOT, 'tmp', filename), 'r') as f:
         return json.load(f, 'utf-8')

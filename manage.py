@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask.ext.script import Manager
 from ebookdio.app import app
+from flask.ext.script import Manager
 
 manager = Manager(app)
 
 
 @manager.command
 def populate_db():
-    pass
+    print "Use scripts/populate_db.py"
+
 
 if __name__ == "__main__":
     manager.run()
