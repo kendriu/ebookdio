@@ -115,14 +115,14 @@
 						</table>
 					</div>#}
 
-					{% for title, author in books%}
+					{% for book in books%}
 						<div class="col-sm-4 col-lg-4 col-md-4">
 							<div class="thumbnail">
 								<img src="http://placehold.it/71x108" alt="" class="pull-left">
 								<div class="caption">
-									<h4><a href="#">{{title | title}}</a>
+									<h4><a href="#">{{book.short_title}}</a>
 									</h4>
-									<p>{{author | title}}</p>
+									<p>{{book.author}}</p>
 									<h4>$24.99</h4>
 								</div>
 								<div class="ratings">
