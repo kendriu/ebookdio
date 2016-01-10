@@ -1,0 +1,6 @@
+dictalchemy
+flask
+flask-bootstrap
+flask-script
+flask-sqlalchemy
+scrapy
