@@ -8,6 +8,14 @@ body {
 	padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
 }
 
+.logo img{
+	width: 50%;
+}
+
+.logo .lead {
+	margin-top: 10px;
+}
+
 .slide-image {
 	width: 100%;
 }
@@ -44,4 +52,19 @@ body {
 
 footer {
 	margin: 50px 0;
+}
+
+.link-unstyled {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.link-unstyled:link {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.link-unstyled:hover {
+  color: inherit;
+  text-decoration: inherit;
 }
