@@ -1,10 +1,13 @@
+import logging
 import os
 import sqlite3
 
+from decorators import templated
 from flask import Flask
 from flask_bootstrap import Bootstrap
 
-from decorators import templated
+log = logging.Logger(__file__)
+log.addHandler(logging.StreamHandler())
 
 root = lambda p: os.path.join(os.path.dirname(__file__), p)
 
@@ -25,9 +28,22 @@ app = create_app()
 @app.route('/')
 @templated()
 def home():
+    books = get_books()
+    return {'books': books}
+
+
+def get_books():
     with get_db() as db:
         books = db.execute('SELECT * FROM books ORDER BY author').fetchall()
-    return {'books': books}
+    result = []
+    for title, author in books:
+        max_len = 30
+        if len(title) > max_len:
+            title = title[:max_len] + '...'
+        result.append((title, author))
+
+    return result
+
 
 if __name__ == "__main__":
     app.run()
