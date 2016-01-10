@@ -11,4 +11,4 @@ log.addHandler(logging.StreamHandler())
 @app.route('/')
 @templated()
 def home():
-    return {'books': Book.query.all()}
+    return {'books': Book.query.order_by('title').all()}

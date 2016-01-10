@@ -8,8 +8,8 @@ class Book(db.Model):
 
     @property
     def short_title(self):
-        max_len = 30
+        max_len = 27
         if len(self.title) > max_len:
-            return self.title[:max_len] + '...'
+            return self.title[:max_len].strip() + '...'
         else:
             return self.title

@@ -5,7 +5,7 @@
  */
 
 body {
-	padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+	/*padding-top: 70px; [> Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. <]*/
 }
 
 .logo img{
@@ -35,10 +35,9 @@ body {
 }
 
 
-.ratings {
+.product .buy {
 	padding-right: 10px;
-	padding-left: 10px;
-	color: #d17581;
+	padding-bottom: 10px;
 }
 
 .thumbnail {
@@ -55,16 +54,23 @@ footer {
 }
 
 .link-unstyled {
-  color: inherit;
-  text-decoration: inherit;
+	color: inherit;
+	text-decoration: inherit;
 }
 
 .link-unstyled:link {
-  color: inherit;
-  text-decoration: inherit;
+	color: inherit;
+	text-decoration: inherit;
 }
 
 .link-unstyled:hover {
-  color: inherit;
-  text-decoration: inherit;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.clear{
+	clear: both;
+	margin: 0;
+	padding: 0;
+	height: 0;
 }
