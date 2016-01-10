@@ -14,13 +14,13 @@ def main():
         os.remove(db_file)
     except OSError:
         pass
-    db = sqlite3.connect(db_file)
-    c = db.cursor()
-    c.execute('CREATE TABLE books (title, author)')
-    books = get_matched_books()
-    for book in books:
-        c.execute(
-            u'INSERT INTO books VALUES ("{title}", "{author}")'.format(**book))
+    with sqlite3.connect(db_file) as db:
+        db.execute('CREATE TABLE books (title, author)')
+        books = get_matched_books()
+        for book in books:
+            db.execute(
+                u'INSERT INTO books VALUES '
+                '("{title}", "{author}")'.format(**book))
 
 
 if __name__ == "__main__":
