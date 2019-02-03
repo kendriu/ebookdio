@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Cannot fetch: Fundacja. Reason; 'utf-8' codec can't decode byte 0xc2 in position 105614: invalid continuation byte
+import re
 import asyncio
 import json
 import sys
@@ -29,6 +31,7 @@ else:
 
 
 async def main():
+    counter = 0
     with open(sys.argv[1], 'r') as f:
         data = json.load(f)
 
@@ -36,12 +39,36 @@ async def main():
     print(f'Audioteka books:{len(data)}')
     async with aiohttp.ClientSession(connector=conn) as session:
         tasks = []
+        re_sep = (r'\Wt.\s*\d+',
+                  r'\Wtom\s*\d+',
+                  r'\Wtom\s*I+',
+                  r'\Wcz\.?\s*\d+',
+                  r'\Wcz\.?\s*I+',
+                  r'\Wpart\s*I+',
+                  r'\Wksięga\s*I+',
+                  r'\Wwydanie\s*I+',
+                  r'\Wczęść\s*\d+',
+                  r'\Wczęść\s*I+',
+                  r'\Wodcinek\s*\d+',
+                  r'\WI+$',
+                  )
         for i in data:
-            a = Book(i['title'], i['author'], None, None)
+            a = Book(i['title'], i['author'].split(',')[0].strip(), None, None)
+
             if a.title in owned:
                 continue
-            tasks.append(asyncio.ensure_future(fetch_book(session, a)))
+
+            search_text = a.title
+            for rs in re_sep:
+                s = re.split(rs, a.title, flags=re.IGNORECASE)
+                if len(s) > 1:
+                    search_text = s[0].strip('-,. ')
+                    break
+
+            tasks.append(asyncio.ensure_future(fetch_book(session, a, search_text)))
+            counter += 1
         pairs.extend(await asyncio.gather(*tasks))
+        print(f'Number of parsed books: {counter}')
 
 
 async def fetch(session, url):
@@ -49,39 +76,71 @@ async def fetch(session, url):
         return await response.text()
 
 
-async def fetch_book(session, a):
+async def fetch_book(session, a, search_text):
+    print(search_text)
     p = Pair(a, null_book)
     print(f"Parsing {a.title} --- {a.author}")
-    url = URL + '+'.join(a.title.split())
+    url = URL + '+'.join(search_text.split())
     try:
         text = await fetch(session, url)
     except Exception as e:
         print(f'Cannot fetch: {a.title}. Reason; {e}')
-    else:
-        tree = html.fromstring(text)
-        books = tree.find_class("book")
-        for book in books:
-            links = book.cssselect('a')
-            title = links[1].text
-            try:
-                author = links[2].text
-            except IndexError:
-                author = None
+        return p
 
-            stats = book.cssselect('.book-stats span')
-            try:
-                people = int(stats[0].text)
-                note = float(stats[2].text.replace(',', '.'))
-            except IndexError:
-                print(f'Cannot parse: {a.title}')
-                continue
+    tree = html.fromstring(text)
+    books = tree.find_class("book")
+    if not books:
+        return p
+    match = null_book
+    for book in books:
+        l = await parse_book(book)
+        if l == null_book:
+            continue
+        if match == null_book:
+            match = l
 
-            l = Book(title, author, note, people)
-            p = Pair(a, l)
-            break
+        a_surname = a.author.split()[-1]
+        try:
+            l_surnames = l.author.split(', ')
+        except AttributeError:
+            continue
+        for sur in l_surnames:
+            sur = sur.strip()
+            s = sur.split()[-1]
+
+            if a_surname == s:
+                if match.title.lower().startswith(a.title.lower()[:1]):
+                    match = l
+                    break
         else:
-            print(f'Cannot find:{a.title}')
+            continue
+        break
+    else:
+        print(f'Cannot find:{a.title}')
+
+    if match != null_book and match.title.lower().startswith(a.title.lower()[:1]):
+        p = Pair(a, match)
+
+    sys.exit()
     return p
+
+
+async def parse_book(book):
+    links = book.cssselect('a')
+    title = links[1].text
+    try:
+        author = ', '.join((link.text for link in book.cssselect('span')[0].cssselect('a') if link.text))
+    except IndexError:
+        author = None
+    author = author or None
+    stats = book.cssselect('.book-stats span')
+    try:
+        people = int(stats[0].text)
+        note = float(stats[2].text.replace(',', '.'))
+    except IndexError:
+        # Probably not a book
+        return null_book
+    return Book(title, author, note, people)
 
 
 if __name__ == '__main__':
