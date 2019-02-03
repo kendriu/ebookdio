@@ -6,11 +6,12 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-from scrapy.loader.processors import TakeFirst
+from scrapy.loader.processors import TakeFirst, MapCompose
 from scrapy.loader import ItemLoader
 
 
 class AudioBookItem(scrapy.Item):
+
     title = scrapy.Field()
     author = scrapy.Field()
     price = scrapy.Field()
@@ -18,5 +19,6 @@ class AudioBookItem(scrapy.Item):
 
 
 class AudioBookLoader(ItemLoader):
+    default_input_processor = MapCompose(lambda v: v.strip())
     default_output_processor = TakeFirst()
     default_item_class = AudioBookItem

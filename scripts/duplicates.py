@@ -18,6 +18,6 @@ for du in dups:
     i += 1
     for d in data:
         if d['title'] == du:
-            print d
+            print(d)
 
 print("Number of duplicates: " + str(i))

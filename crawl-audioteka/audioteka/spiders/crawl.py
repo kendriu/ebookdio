@@ -14,14 +14,15 @@ EXCLUDED_AUTHORS = [
 class CrawlSpider(CrawlSpider):
     name = 'crawl'
     allowed_domains = ['audioteka.com']
-    start_urls = ['http://audioteka.com/pl/']
+    start_urls = ['http://audioteka.com/pl/audiobooks']
 
     rules = (
         Rule(LinkExtractor(
-            restrict_xpaths=('(//ul[contains(@class, "menu_level_1")])[1]',
-                             '//div[contains(@class, "load-more")]'
+            restrict_xpaths=('//ul[contains(@class, "all-categories")]',
+                             '//h2[contains(@class, "fs17")]',
+                             '//div[contains(@class, "items-loader")]'
                              ),
-            deny=('prasa-n$')
+            deny=('prasa-n$', 'polityka-n$')
         ),
             callback='parse_list',
             follow=True),
@@ -30,13 +31,13 @@ class CrawlSpider(CrawlSpider):
 
     def parse_list(self, response):
         result = []
-        for sel in response.css('.product-tile'):
+        for sel in response.css('.item'):
             l = AudioBookLoader(selector=sel)
+
             l.add_xpath(
-                'title', './/h3[@class="product-tile__name"]/a/text()')
+                'title', './/h2[@class="item__title"]/a/text()')
             l.add_xpath(
-                'author', './/div[@class="product-tile__author"]/a/text()')
-            l.add_xpath('category', '//h1/text()')
+                'author', './/div[@class="item__author"]/a/text()')
 
             item = l.load_item()
             if 'author' in item and item['author'] not in EXCLUDED_AUTHORS:

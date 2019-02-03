@@ -3,3 +3,6 @@ flask-bootstrap
 flask-script
 flask-sqlalchemy
 scrapy
+aiohttp
+aiodns
+lxml
