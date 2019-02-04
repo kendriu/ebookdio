@@ -54,8 +54,8 @@ async def main():
         for i in data:
             a = Book(i['title'], i['author'].split(',')[0].strip(), None, None)
 
-            # if a.title in owned:
-            #     continue
+            if a.title in owned:
+                continue
 
             search_text = a.title
             for rs in re_sep:
