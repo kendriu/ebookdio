@@ -51,7 +51,7 @@ async def main():
                   r'\Wodcinek\s*\d+',
                   r'\WI+$',
                   )
-        for i in data[:10]:
+        for i in data[:100]:
             a = Book(i['title'], i['author'].split(',')[0].strip(), None, None)
 
             # if a.title in owned:
