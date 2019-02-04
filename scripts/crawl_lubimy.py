@@ -51,11 +51,11 @@ async def main():
                   r'\Wodcinek\s*\d+',
                   r'\WI+$',
                   )
-        for i in data:
+        for i in data[:10]:
             a = Book(i['title'], i['author'].split(',')[0].strip(), None, None)
 
-            if a.title in owned:
-                continue
+            # if a.title in owned:
+            #     continue
 
             search_text = a.title
             for rs in re_sep:
