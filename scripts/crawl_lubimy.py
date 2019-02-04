@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-# Cannot fetch: Fundacja. Reason; 'utf-8' codec can't decode byte 0xc2 in position 105614: invalid continuation byte
 import re
 import asyncio
 import json
@@ -55,8 +54,8 @@ async def main():
         for i in data:
             a = Book(i['title'], i['author'].split(',')[0].strip(), None, None)
 
-            if a.title in owned:
-                continue
+            # if a.title in owned:
+            #     continue
 
             search_text = a.title
             for rs in re_sep:
@@ -77,7 +76,6 @@ async def fetch(session, url):
 
 
 async def fetch_book(session, a, search_text):
-    print(search_text)
     p = Pair(a, null_book)
     print(f"Parsing {a.title} --- {a.author}")
     url = URL + '+'.join(search_text.split())
@@ -121,7 +119,6 @@ async def fetch_book(session, a, search_text):
     if match != null_book and match.title.lower().startswith(a.title.lower()[:1]):
         p = Pair(a, match)
 
-    sys.exit()
     return p
 
 
