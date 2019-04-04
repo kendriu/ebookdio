@@ -50,11 +50,14 @@ async def main():
                   r'\Wczęść\s*I+',
                   r'\Wodcinek\s*\d+',
                   r'\WI+$',
+                  r'\(.+$',
                   )
         for i in data:
             a = Book(i['title'], i['author'].split(',')[0].strip(), None, None)
 
-            if a.title in owned:
+            # if a.title in owned and owned[a.title]['lubimy']['title'] is not None:
+            # if a.title in owned:
+            if not '(' in a.title:
                 continue
 
             search_text = a.title
@@ -72,7 +75,7 @@ async def main():
 
 async def fetch(session, url):
     async with session.get(url) as response:
-        return await response.text()
+        return await response.read()
 
 
 async def fetch_book(session, a, search_text):
@@ -80,12 +83,12 @@ async def fetch_book(session, a, search_text):
     print(f"Parsing {a.title} --- {a.author}")
     url = URL + '+'.join(search_text.split())
     try:
-        text = await fetch(session, url)
+        body = await fetch(session, url)
     except Exception as e:
         print(f'Cannot fetch: {a.title}. Reason; {e}')
         return p
 
-    tree = html.fromstring(text)
+    tree = html.fromstring(body)
     books = tree.find_class("book")
     if not books:
         return p
