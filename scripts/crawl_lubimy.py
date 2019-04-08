@@ -55,9 +55,7 @@ async def main():
         for i in data:
             a = Book(i['title'], i['author'].split(',')[0].strip(), None, None)
 
-            # if a.title in owned and owned[a.title]['lubimy']['title'] is not None:
-            # if a.title in owned:
-            if not '(' in a.title:
+            if a.title in owned and owned[a.title]['lubimy']['title'] is not None:
                 continue
 
             search_text = a.title
